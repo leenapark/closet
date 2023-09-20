@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rank">
+
+	<select id="pointList" resultType="UserVo">
+		<![CDATA[
+			select r.rank,
+			       r.nickname,
+			       r.id,
+			       r.profileImg,
+			       r.point
+        	from (select rownum as rank,
+			             o.nickname,
+			             o.id,
+			             o.profileImg,
+			             o.point
+			      from (select nickName,
+			                   id,
+			                   profileImg,
+			                   point
+			            from users
+			            where point > 0
+			            order by point desc) o) r
+            where r.rank <=10
+		]]>
+	</select>
+	
+	<select id="goodList" resultType="RankVo">
+		<![CDATA[
+			select r.rank,
+       			   r.id,
+       			   r.userno,
+       			   r.boardNo,
+       			   r.nickName,
+       			   r.profileImg,
+       			   r.title,
+       			   r.gcount
+            from (select rownum as rank,
+       			         o.id,
+       			         o.userno,
+       			         o.boardNo,
+       			         o.nickName,
+       			         o.profileImg,
+       			         o.title,
+       			         o.gcount
+ 			      from(select u.id,
+			                  u.userno,
+			                  b.boardNo,
+			                  u.nickName,
+			                  u.profileImg,
+			                  b.title,
+			                  gc.gcount
+				       from users u, codiboard b, (select  f.boardno,
+			                                               count(f.boardno) gcount
+			                                       from feeling f, users u, codiboard b
+			                                       where feeltype = 'good'
+			                                       and f.boardno = b.boardno
+			                                       and f.userno = u.userno
+			                                       group by f.boardno) gc
+			      where gc.boardno = b.boardno
+			      and u.userno = b.userno
+                  order by gc.gcount desc, b.regDate asc) o) r
+			where r.rank <=10
+		]]>
+	</select>
+	
+</mapper>

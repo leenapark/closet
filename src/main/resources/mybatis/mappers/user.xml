@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+
+	<!-- 쿼리문 작성 -->
+	<select id="login" resultType="UserVo">
+	<![CDATA[
+		select userNo,
+			   name,
+			   id,
+			   nickName
+		from users
+		where id = #{id} and password = #{password}
+	]]>
+	</select>
+	
+	<!-- 카카오 로그인 - db에 id가 있으면 가입이 아닌 로그인이 된다 -->
+	<select id="loginKakao" resultType="UserVo">
+	<![CDATA[
+		select userNo,
+			   name,
+			   id,
+			   nickName
+		from users
+		where id = #{id} and email = #{email}
+	]]>
+	</select>
+	
+	<!-- 회원정보 가져오기: 회원 가입 - 아이디 체크 -->
+	<select id="selectById" parameterType="string" resultType="UserVo">
+		<![CDATA[
+			select  userNo,
+			        id,
+			        name
+			from users
+			where id = #{id}
+		]]>
+	</select>
+	
+	<!-- 회원정보 가져오기: 회원 가입 - 닉네임 체크 -->
+	<select id="selectByNickName" parameterType="string" resultType="UserVo">
+		<![CDATA[
+			select  userNo,
+			        id,
+			        name,
+			        nickName
+			from users
+			where nickName = #{nickName}
+		]]>
+	</select>
+
+	<!-- 회원가입 -->
+	<insert id="insertJoin" parameterType="UserVo">
+		<![CDATA[
+		insert into users
+		VALUES(seq_users_no.nextval,
+				#{id},
+				#{password},
+				#{name},
+				#{email},
+				#{gender},
+				#{nickName},
+				sysdate,
+				default,
+				0,
+				0,
+				0)		
+		]]>
+	</insert>
+	
+	<!-- 카카오 회원가입 -->
+	<insert id="joinKakao" parameterType="UserVo">
+		<![CDATA[
+		insert into users
+		VALUES(seq_users_no.nextval,
+				#{id},
+				#{password, jdbcType=VARCHAR},
+				'이름',
+				#{email},
+				#{gender},
+				#{nickName},
+				sysdate,
+				default,
+				0,
+				0,
+				0)
+		]]>
+	</insert>
+	
+	<!-- 프로필 사진 변경 -->
+	<update id="updateProfile" parameterType="UserVo">
+		<![CDATA[
+			update users
+			set profileImg = #{profileImg}
+			where id = #{id}
+	    ]]>
+	</update>
+	
+	
+	<!-- 회원 정보 수정 폼 -->
+	<select id="selectModify" parameterType="int" resultType="UserVo">
+		<![CDATA[
+			select  id,
+			        password,
+			        userno,
+			        name,
+			        email,
+			        gender,
+			        nickName,
+			        profileimg
+			from users
+			where userNo = #{userNo}		
+	    ]]>
+	</select>
+	
+	<!-- 비밀번호 수정 -->
+	<update id="updatePass" parameterType="UserVo">
+		<![CDATA[
+			update users
+			set password = #{password}
+			where id = #{id}
+	    ]]>
+	</update>
+	
+	
+	<!-- 닉네임 수정 -->
+	<update id="updateNickName" parameterType="UserVo">
+		<![CDATA[
+			update users
+			set nickName = #{nickName}
+			where id = #{id}
+	    ]]>
+	</update>
+	
+	<!-- 이메일 수정 -->
+	<update id="updateEmail" parameterType="UserVo">
+		<![CDATA[
+			update users
+			set email = #{email}
+			where id = #{id}
+	    ]]>
+	</update>
+	
+	<!-- 이메일 수정 -->
+	<update id="updateGender" parameterType="UserVo">
+		<![CDATA[
+			update users
+			set gender = #{gender}
+			where id = #{id}
+	    ]]>
+	</update>
+	
+</mapper>

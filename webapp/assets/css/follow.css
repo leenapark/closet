@@ -1,0 +1,93 @@
+@charset "UTF-8";
+
+
+/***************follow*******************************/
+
+.follow-ul li {
+	list-style: none;
+}
+
+#follow-menu {
+	margin: 0px 0px 50px 0px;
+}
+
+#follow-main {
+	float:right;
+	display: inline-block;
+	width: 950px;
+	height: 60px;
+	color: #4D4D4D;
+	position: relative;
+	font-size: 25px;
+	font-weight: bold;
+    overflow: visible;
+    border-bottom: solid 1px #dbdbdb;
+	margin: 20px 0px 0px 0px;
+}
+
+.page-follow {
+	display: inline-block;
+    position: relative;
+}
+
+.page-follow a {
+    padding: 0px 10px;
+    text-align: center;
+    font-weight: bold;
+    height: 50px;
+    line-height: 10px;
+    transition: color .15s ease;    
+}
+
+#follow-menu .following-active a {
+	    color: #35c5f0;
+}
+
+#follow-menu .followers-active a {
+	    color: #35c5f0;
+}
+
+
+.following-active::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    left: 0;
+    bottom: 0px;
+}
+
+.followers-active::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+}
+
+/***************follower / following List*******************************/
+#follow-content {
+	float: inherit;
+	display: inline-block;
+	width: 950px;
+	height: 60px;
+	color: #4D4D4D;
+	position: relative;
+	font-size: 15px;
+	font-weight: bold;
+    overflow: visible;
+	margin: 0px 0px;
+}
+
+.profile{
+	width : 40px;
+	height : 40px;
+	border-radius: 20px;
+}
+
+.user .users {
+	margin: 0px 0px 20px 0px;
+	padding-bottom: 20px;
+	border-bottom: solid 1px #dbdbdb;
+}

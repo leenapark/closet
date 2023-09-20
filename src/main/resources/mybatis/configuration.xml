@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    
+    <typeAliases>
+    	<typeAlias alias="ClothesVo" type="com.closet.vo.ClothesVo"/>
+    	<typeAlias alias="UserVo" type="com.closet.vo.UserVo"/>
+    	<typeAlias alias="MyRoomVo" type="com.closet.vo.MyRoomVo"/>
+    	<typeAlias alias="CodiBoardVo" type="com.closet.vo.CodiBoardVo"/>
+    	<typeAlias alias="TrendSetterVo" type="com.closet.vo.TrendSetterVo"/>
+    	<typeAlias alias="HashTagVo" type="com.closet.vo.HashTagVo"/>
+    	<typeAlias alias="WishListVo" type="com.closet.vo.WishListVo" />
+    	<typeAlias alias="FollowVo" type="com.closet.vo.FollowVo" />
+    	<typeAlias alias="MatchBoardVo" type="com.closet.vo.MatchBoardVo" />
+    	<typeAlias alias="CommentVo" type="com.closet.vo.CommentVo" />
+    	<typeAlias alias="CodiImgVo" type="com.closet.vo.CodiImgVo"/>
+    	<typeAlias alias="RankVo" type="com.closet.vo.RankVo"/>
+    	<typeAlias alias="FeelingVo" type="com.closet.vo.FeelingVo"/>
+    	
+    </typeAliases>
+    
+     <mappers>
+        <mapper resource="mybatis/mappers/closet.xml"/>
+        <mapper resource="mybatis/mappers/user.xml"/>
+        <mapper resource="mybatis/mappers/styleMatch.xml"/>
+        <mapper resource="mybatis/mappers/trendSetter.xml"/>
+        <mapper resource="mybatis/mappers/hashTag.xml"/>
+        <mapper resource="mybatis/mappers/follow.xml"/>
+        <mapper resource="mybatis/mappers/rank.xml"/>
+     </mappers>
+     
+</configuration>

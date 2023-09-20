@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="style">
+
+	<!-- 리스트 불러오기 -->
+	<select id="matchBoardList" parameterType="map" resultType="com.closet.vo.CodiBoardVo">
+		<![CDATA[
+				select rnum.rn,
+				       rnum.boardNo,
+				       rnum.userNo,
+				       rnum.title,
+				       rnum.content,
+				       rnum.division,
+				       rnum.boardImg, 
+				       rnum.gender, 
+				       rnum.regDate,
+				       rnum.deadline, 
+				       rnum.openFlag, 
+				       rnum.delFlag, 
+				       rnum.nickName,
+				       rnum.id as userId,
+				       rnum.reCount,
+				       rnum.adopt,
+				       rnum.follower
+				from (select rownum as rn,
+				           ro.boardNo,
+				           ro.userNo,
+				           ro.title,
+				           ro.content,
+				           ro.division,
+				           ro.boardImg, 
+				           ro.gender, 
+				           ro.regDate,
+				           ro.deadline, 
+				           ro.openFlag, 
+				           ro.delFlag, 
+				           ro.nickName,
+				           ro.id,
+				           ro.reCount,
+				           ro.adopt,
+				           ro.follower
+				    from ( select  c.boardNo,
+				                c.userNo, 
+				                c.title, 
+				                c.content, 
+				                c.division, 
+				                c.boardImg, 
+				                c.gender, 
+				                to_char(c.regDate, 'YY.MM.DD HH24:MI:MM') regDate, 
+				                to_char(c.deadline,  'YY.MM.DD') deadline, 
+				                c.openFlag, 
+				                c.delFlag, 
+				                u.nickName,
+				                u.id,
+				                co.reCount,
+				                ad.adopt,
+				                f.follower
+				        from codiBoard c , users u , (select count (ma.matchNo) reCount,
+				                                             ma.boardNo boardNo
+				                                     from matchBoard ma , codiBoard codi
+				                                     where division = 'recruitCodi'
+				                                     and ma.boardNo = codi.boardNo
+				                                     and ma.userNo != codi.userNo
+				                                     group by ma.boardNo) co , (select boardNo,
+				                                                                       count(adopt) as adopt
+				                                                                from matchBoard
+				                                                                where adopt='Y'
+				                                                                group by boardNo) ad  ,(select following,
+					                                                                                           follower
+					                                                                                    from follow 
+					                                                                                    where follower = #{follower} ) f                  
+				        where division = 'recruitCodi'
+				        and c.boardNo = co.boardNo(+)
+				        and c.boardNo = ad.boardNo(+)
+				        and c.userNo = u.userNo
+				        and c.delFlag = 'N'
+				        and c.userNo = f.following(+)
+		]]>
+			<if test="keyword != null and keyword != '' and searchCate == 'title'">
+			    and c.title like '%' || #{keyword} || '%'
+			</if>
+			
+			<if test="keyword != null and keyword != '' and searchCate == 'nickName'">
+			    and u.nickName like '%' || #{keyword} || '%'
+			</if>
+            
+			<if test="gender != null and gender != ''">
+				and c.gender = #{gender}
+			</if>
+		<![CDATA[  			                       
+				        order by regDate desc) ro ) rnum
+				where rnum.rn >= #{startPostNo}
+				and rnum.rn <= #{endPostNo}
+		]]>
+	</select>
+	
+	<!-- 스타일 매칭 리스트 카운트 -->
+	<select id="matchBoardListCnt" parameterType="map" resultType="int">
+		<![CDATA[
+			select count(mbCnt.boardNo)
+			from (select rnum.rn,
+				       rnum.boardNo,
+				       rnum.userNo,
+				       rnum.title,
+				       rnum.content,
+				       rnum.division,
+				       rnum.boardImg, 
+				       rnum.gender, 
+				       rnum.regDate,
+				       rnum.deadline, 
+				       rnum.openFlag, 
+				       rnum.delFlag, 
+				       rnum.nickName,
+				       rnum.id,
+				       rnum.reCount,
+				       rnum.adopt
+				from (select rownum as rn,
+				           ro.boardNo,
+				           ro.userNo,
+				           ro.title,
+				           ro.content,
+				           ro.division,
+				           ro.boardImg, 
+				           ro.gender, 
+				           ro.regDate,
+				           ro.deadline, 
+				           ro.openFlag, 
+				           ro.delFlag, 
+				           ro.nickName,
+				           ro.id,
+				           ro.reCount,
+				           ro.adopt
+				    from ( select  c.boardNo,
+				                c.userNo, 
+				                c.title, 
+				                c.content, 
+				                c.division, 
+				                c.boardImg, 
+				                c.gender, 
+				                to_char(c.regDate, 'YY.MM.DD HH24:MI') regDate, 
+				                to_char(c.deadline,  'YY.MM.DD') deadline, 
+				                c.openFlag, 
+				                c.delFlag, 
+				                u.nickName,
+				                u.id,
+				                co.reCount,
+				                ad.adopt
+				        from codiBoard c , users u , (select count (ma.matchNo) reCount,
+				                                             ma.boardNo boardNo
+				                                     from matchBoard ma , codiBoard codi
+				                                     where division = 'recruitCodi'
+				                                     and ma.boardNo = codi.boardNo
+				                                     and ma.userNo != codi.userNo
+				                                     group by ma.boardNo) co , (select boardNo,
+				                                                                       count(adopt) as adopt
+				                                                                from matchBoard
+				                                                                where adopt='Y'
+				                                                                group by boardNo) ad                   
+				        where division = 'recruitCodi'
+				        and c.boardNo = co.boardNo(+)
+				        and c.boardNo = ad.boardNo(+)
+				        and c.userNo = u.userNo
+				        and c.delFlag = 'N'
+		]]>
+			<if test="keyword != null and keyword != '' and searchCate == 'title'">
+			    and c.title like '%' || #{keyword} || '%'
+			</if>
+			
+			<if test="keyword != null and keyword != '' and searchCate == 'nickName'">
+			    and u.nickName like '%' || #{keyword} || '%'
+			</if>
+            
+			<if test="gender != null and gender != ''">
+				and c.gender = #{gender}
+			</if>
+		<![CDATA[  			                       
+			order by regDate desc
+			 ) ro ) rnum ) mbCnt
+		]]>	
+	</select>
+	
+	
+	<!-- 게시글 하나만 불러오기 -->
+	<select id="matchBoardOne" parameterType="int" resultType="CodiBoardVo">
+		<![CDATA[
+			select  c.boardNo,
+			        c.userNo, 
+			        c.title, 
+			        c.content, 
+			        c.division, 
+			        c.boardImg, 
+			        c.gender, 
+			        to_char(c.deadline,'YY.MM.DD') deadline, 
+			        c.openFlag, 
+			        c.delFlag,
+			        u.nickName,
+			        u.id as userId
+			from codiBoard c ,users u
+			where boardNo = #{boardNo}
+			and c.userNo = u.userNo
+		]]>
+	</select>
+	
+	
+	<!-- 답글 리스트 불러오기 : 최신순 -->
+	<select id="reMatchBoardList" parameterType="int" resultType="com.closet.vo.CodiBoardVo">
+		<![CDATA[
+			select rnum.rn,
+		           rnum.matchNo,
+		           rnum.userNo,
+		           rnum.boardNo,
+		           rnum.content,    
+		           rnum.regDate,
+		           rnum.matchImg,
+		           rnum.title,
+		           rnum.nickname,
+		           rnum.id as userId,
+		           rnum.good,
+		           rnum.hate,
+		           rnum.reCount,
+		           rnum.adopt,
+		           rnum.follower  
+		    from (select   rownum as rn,
+		                   ro.matchNo,
+		                   ro.userNo,
+		                   ro.boardNo,
+		                   ro.content,    
+		                   ro.regDate,
+		                   ro.matchImg,
+		                   ro.title,
+		                   ro.nickname,
+		                   ro.id,
+		                   ro.good,
+		                   ro.hate,
+		                   ro.reCount,
+		                   ro.adopt,
+		                   ro.follower     
+			        from (select m.matchNo,
+			                    m.userNo,
+			                    m.boardNo,
+			                    m.content,    
+			                    m.regDate,
+			                    m.matchImg,
+			                    m.title,
+			                    u.nickname,
+			                    u.id,
+			                    goodReCom.good,
+			                    hateReCom.hate,
+			                    reCount,
+			                    adopt,
+			                    f.follower
+				            from matchBoard m left outer join (select following, 
+				                                                      follower 
+				                                               from follow 
+				                                               where follower = #{follower} ) f 
+				                                on m.userNo = f.following
+				            					left outer join (select  matchNo,
+				                                                       count(feelingNo) as good
+				                                               from feeling 
+				                                               where feeltype = 'good'
+				                                               group by matchNo) goodReCom
+				                          on m.matchno = goodReCom.matchno left outer join (select matchNo,
+				                                                                 count(feelingNo) as hate
+				                                                          from feeling 
+				                                                          where feeltype = 'hate'
+				                                                          group by matchNo) hateReCom
+				                          on m.matchno = hateReCom.matchno left outer join (select matchNo,
+				                                                                 count (matchComNo) as reCount
+				                                                          from matchcomment
+				                                                          group by matchNo) macthReCnt
+				                          on macthReCnt.matchNo = m.matchNo, users u ,codiBoard c 
+			        where m.boardNo = c.boardNo
+			        and u.userNo = m.userNo
+			        and m.boardNo = #{boardNo}
+			        and c.userNo != m.userNo         
+			        order by regDate desc) ro ) rnum
+        where rnum.rn >= #{startPostNo}
+		and rnum.rn <= #{endPostNo}
+		]]>
+	</select>
+	
+	<!-- 답글 리스트 갯수 -->
+	<select id="reMatchBoardListCnt" parameterType="map" resultType="int">
+		<![CDATA[
+			select count(mbCnt.matchNo) 
+			from(select rnum.rn,
+			           rnum.matchNo,
+			           rnum.userNo,
+			           rnum.boardNo,
+			           rnum.content,    
+			           rnum.regDate,
+			           rnum.matchImg,
+			           rnum.title,
+			           rnum.nickname,
+			           rnum.id as userId,
+			           rnum.good,
+			           rnum.hate,
+			           rnum.reCount,
+			           rnum.adopt,
+			           rnum.follower  
+			    from (select   rownum as rn,
+			                   ro.matchNo,
+			                   ro.userNo,
+			                   ro.boardNo,
+			                   ro.content,    
+			                   ro.regDate,
+			                   ro.matchImg,
+			                   ro.title,
+			                   ro.nickname,
+			                   ro.id,
+			                   ro.good,
+			                   ro.hate,
+			                   ro.reCount,
+			                   ro.adopt,
+			                   ro.follower     
+				        from (select m.matchNo,
+				                    m.userNo,
+				                    m.boardNo,
+				                    m.content,    
+				                    m.regDate,
+				                    m.matchImg,
+				                    m.title,
+				                    u.nickname,
+				                    u.id,
+				                    goodReCom.good,
+				                    hateReCom.hate,
+				                    reCount,
+				                    adopt,
+				                    f.follower
+					            from matchBoard m left outer join (select  matchNo,
+					                                                       count(feelingNo) as good
+					                                               from feeling 
+					                                               where feeltype = 'good'
+					                                               group by matchNo) goodReCom
+					                          on m.matchno = goodReCom.matchno left outer join (select matchNo,
+					                                                                 count(feelingNo) as hate
+					                                                          from feeling 
+					                                                          where feeltype = 'hate'
+					                                                          group by matchNo) hateReCom
+					                          on m.matchno = hateReCom.matchno left outer join (select matchNo,
+					                                                                 count (matchComNo) as reCount
+					                                                          from matchcomment
+					                                                          group by matchNo) macthReCnt
+					                          on macthReCnt.matchNo = m.matchNo, users u ,codiBoard c left outer join (select following, 
+					                                                                                                            follower 
+					                                                                                                            from follow 
+					                                                                                                    where follower = #{follower}) f 
+					                                                                                    on c.userNo = f.following 
+        where m.boardNo = c.boardNo
+        and u.userNo = m.userNo
+        and m.boardNo = #{boardNo}
+        and c.userNo != m.userNo         
+        order by regDate desc) ro ) rnum ) mbCnt
+		]]>
+	</select>
+	
+	<!-- 스타일매칭  삭제(update로 delFlag->'Y'로) -->
+	<update id="codiDelete" parameterType="int">
+		<![CDATA[
+			update codiBoard set delFlag = 'Y' 
+			where boardNo = #{boardNo}
+		]]>
+	</update>
+	
+	<!-- 스타일 매칭 글쓰기 인서트(이미지 제외) -->
+	<insert id="styleMatchInsert" parameterType="com.closet.vo.CodiBoardVo">
+		<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">   
+        	select seq_codiBoard_no.nextval from dual
+      	</selectKey> 
+		<![CDATA[
+			insert into codiBoard 
+			values(	#{boardNo}, 
+					#{userNo}, 
+					#{title}, 
+					#{content}, 
+					'recruitCodi', 
+					#{boardImg}, 
+					#{gender}, 
+					sysdate, 
+					#{deadline}, 
+					'Y', 
+					'N', 
+					null
+					)
+		]]>
+	</insert>
+	
+	<!-- 스타일 매칭 글쓰기 옷장 불러오기 -->
+	<select id="matchClosetList" parameterType="com.closet.vo.ClothesVo" resultType="com.closet.vo.ClothesVo">
+		<![CDATA[	
+			select clothImg,
+				   clothNo		
+		]]>
+		<choose>
+			<when test="clothCateNo == 0">
+					    from closet where userNo=#{userNo} and delFlag = 'N'
+			</when>
+			<otherwise>
+				        from closet where userNo=#{userNo} and clothCateNo=#{clothCateNo} and delFlag = 'N'
+			</otherwise>
+		</choose>
+		<![CDATA[		
+			order by regdate desc		
+		]]>
+	</select>
+	
+	
+	<!-- 답글 하나만 불러오기 -->
+	<select id="reMatchBoardOne" parameterType="int" resultType="com.closet.vo.CodiBoardVo">
+		<![CDATA[
+			select mat.matchNo,
+			        mat.userNo,
+			        mat.boardNo,
+			        mat.title,
+			        mat.content,
+			        mat.regDate,
+			        mat.matchImg,
+			        mat.adopt,
+			        us.id as userId
+			from matchBoard mat , users us
+			where matchNo = #{matchNo}
+			and mat.userNo = us.userNo  
+		]]>
+	</select>
+	
+	<!-- 스타일매칭  답글 채택  -->
+	<update id="adoptUpdate" parameterType="int">
+		<![CDATA[
+			update matchBoard 
+			set adopt = 'Y'
+			where matchNo = #{matchNo}
+		]]>
+	</update>
+	
+	<!-- 스타일매칭  답글 채택시 포인트 +100  -->
+	<update id="pointUpdate" parameterType="int">
+		<![CDATA[
+			update users
+			set point = point+100
+			where userNo = #{userNo}
+		]]>
+	</update>
+	
+	<!-- 이미지 답글 입력 -->
+	<insert id="insertReply" parameterType="MatchBoardVo">
+		<![CDATA[
+		insert into matchBoard 
+			values(seq_matchBoard_no.nextval, 
+					#{userNo}, 
+					#{boardNo}, 
+					#{title},
+					#{content}, 
+					sysdate, 
+					#{matchImg}, 
+					'N'
+					)
+		]]>
+	</insert>
+	
+	<!-- 답글 삭제 -->
+	<delete id="deleteReply" parameterType="int">
+		delete from matchBoard where matchNo=#{matchNo}
+	</delete>
+	
+	<!-- 대댓글 리스트 -->
+	<select id="matchCommentList" parameterType="int" resultType="CommentVo">
+		<![CDATA[
+			select  mc.matchComNo,
+					mc.matchNo,
+			        mc.userNo,
+			        mc.content,
+			        mc.regDate,
+			        u.nickName
+			from matchComment mc,users u
+			where matchNo = #{matchNo} and u.userNo = mc.userNo
+			order by regDate asc
+		]]>
+	</select>
+	
+	
+	<!-- 대댓글 인서트 -->
+	<insert id="matchCommentInsert"  parameterType="map">
+		<![CDATA[
+		insert into matchComment 
+			values(seq_matchComment_no.nextval, 
+					#{userNo}, 
+					#{matchNo}, 
+					#{content}, 
+					sysdate)
+		]]>
+	
+	</insert>
+	
+	<delete id="matchCommentDelete" parameterType="int">
+		<![CDATA[
+			delete matchComment
+			where matchComNo = #{matchComNo}
+		]]>
+	</delete>
+	
+	<!-- 대댓글 수정 -->
+	<update id="modiMatchComment" parameterType="map">
+		<![CDATA[
+			update matchComment set content=#{content}
+			where matchComNo = #{matchComNo}
+		]]>
+	</update>
+
+	<insert id="insertCodiImgList" parameterType="map">
+		insert into codiImg values(seq_codiImg_no.nextval,
+			                       #{boardNo},
+			                       #{clothNo},
+			                       #{x},
+			                       #{y},
+			                       0,
+			                       #{imgHeight},
+			                       #{imgWidth},
+			                       'aa')
+	</insert>
+	
+	<select id="getClothes" parameterType="int" resultType="CodiImgVo">
+		select ci.codiImgNo,
+			   ci.clothNo,
+			   ci.x,
+			   ci.y,
+			   ci.imgHeight,
+			   ci.imgWidth,
+			   cl.clothImg
+		from codiImg ci, closet cl
+		where ci.boardNo = #{boardNo}
+		and ci.clothNo = cl.clothNo
+	</select>
+	
+	<select id="feelingSelect" parameterType="map" resultType="FeelingVo">
+      <![CDATA[
+         select  f.feelingNo
+         from matchBoard m, feeling f
+         where m.matchNo = f.matchNo
+         and f.feelType = #{feelType}
+         and f.boardNo is null
+         and m.matchNo = #{matchNo}
+         and f.userNo = #{userNo}
+      ]]>
+	</select>
+	<select id="goodFeelingCount" parameterType="int" resultType="int">
+      <![CDATA[
+         select count(feelingNo) as good
+         from feeling 
+		 where feeltype = 'good'
+		 and matchNo = #{matchNo}
+      ]]>
+	</select>
+	
+	<select id="hateFeelingCount" parameterType="int" resultType="int">
+      <![CDATA[
+         select count(feelingNo) as hate
+         from feeling 
+		 where feeltype = 'hate'
+		 and matchNo = #{matchNo}
+      ]]>
+	</select>
+	
+	<delete id="deleteFeeling">
+		<![CDATA[
+         delete from feeling where userNo = #{userNo} and feelingNo = #{feelingNo} and feelType = #{feelType}
+      ]]>
+	</delete>
+	
+	<insert id="insertFeeling" parameterType="map">
+	<![CDATA[
+         insert into feeling values(seq_feeling_no.nextval,
+									#{userNo},
+									#{matchNo},
+									null,
+									#{feelType})
+      ]]>
+	</insert>
+	
+	<insert id="insertWish" parameterType="map">
+	<![CDATA[
+         insert into wishList values(seq_wishList_no.nextval,
+									#{userNo},
+									null,
+									#{content},
+									sysdate,
+									#{matchNo})
+      ]]>
+	</insert>
+</mapper>

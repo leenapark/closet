@@ -1,0 +1,98 @@
+@charset "UTF-8";
+
+.red {
+	color:#E50000;
+}
+
+.navy {
+	color:navy;
+}
+
+.rankProfile{
+	width : 40px;
+	height : 40px;
+	border-radius: 20px;
+}
+
+.rank-nav {
+	width: 1160px;
+    font-size: 23px;
+    font-weight: bold;
+    color: #666;
+    margin: 10px 0px 10px 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.content .best-rank {
+	float: left;
+	width: 50%;
+	height: 600px;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.content .point-rank {
+	float: right;
+	width: 50%;
+	height: 600px;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.title {
+	margin: 20px 0px 30px 0px;
+	text-align: center;
+	color:#3bb1e5;
+}
+
+.users {
+	margin: 10px 0px;
+	padding: 10px 0px;
+	/* border-bottom: solid 1px #dbdbdb; */
+	text-align: center;
+}
+
+tr {
+	margin: 30px 0px 30px 0px;
+}
+
+tr th {
+	font-size: 20px;
+	text-align: center;
+}
+
+tr td {
+	font-size: 15px;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.simple-table {
+    clear: both;
+    text-align: center;
+    width: 95%;
+    margin: 0px 0px 0px 15px;
+}
+
+.simple-table thead th {
+    font-size: 15px;
+    border-top: 2px solid #333;
+    border-bottom: 1px solid #333;
+    padding: 15px 0;
+}
+
+.simple-table th, .simple-table td {
+    font-family: 'NotoKrM', sans-serif;
+    letter-spacing: 0;
+    color: #222;
+    border-bottom: 1px solid #dfdfdf;
+    padding: 20px 0;
+}
+

@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="closet">
+
+	<!-- 쿼리문 작성 -->
+	<insert id="insertClothes" parameterType="ClothesVo">
+	<![CDATA[
+		insert into closet values(seq_closet_no.nextval, 
+								  #{userNo},
+								  #{clothCateNo},
+								  #{clothImg},
+								  #{clothInfo},
+								  #{clothName},
+								  sysdate,
+								  'N')
+	]]>
+	</insert>
+	<!-- mycloset 정보 가져오기 -->
+	<select id="getMyRoomData" parameterType="String" resultType="MyRoomVo">
+	<![CDATA[
+		select userNo,
+			   id,
+			   nickName,
+			   profileImg,
+			   todayVisit,
+			   totalVisit,
+			   point
+		from users where id=#{id}
+	]]>
+	</select>
+	
+	<!-- 옷장 리스트 가져오기 -->
+	<select id="getClothesList" parameterType="map" resultType="ClothesVo">
+	<![CDATA[
+		select orderdata.rn,
+			   orderdata.clothNo,
+			   orderdata.clothCateNo,
+			   orderdata.clothImg,
+			   orderdata.clothInfo,
+			   orderdata.clothName,
+			   orderdata.delFlag
+		from (select rownum rn,
+				     data.clothNo,
+				     data.clothCateNo,
+				     data.clothImg,
+				     data.clothInfo,
+				     data.clothName,
+				     data.delFlag
+			  from (select clothNo,
+					       clothCateNo,
+					       clothImg,
+					       clothInfo,
+					       clothName,
+					       delFlag
+	]]>
+	<choose>
+		<when test="clothCateNo == 0">
+				    from closet where userNo=#{userNo} and delFlag = 'N'
+		</when>
+		<otherwise>
+			        from closet where userNo=#{userNo} and clothCateNo=#{clothCateNo} and delFlag = 'N'
+		</otherwise>
+	</choose>
+	<![CDATA[
+			        order by clothNo desc)data)orderdata
+		where rn >= #{begin} and rn <= #{end}
+	]]>		
+	</select>
+	
+	<!-- 옷장 카운트 -->
+	<select id="getClothesListCount" parameterType="map" resultType="int">
+	<![CDATA[
+		select count(*)
+	]]>
+	<choose>
+		<when test="clothCateNo == 0">
+			from closet where userNo=#{userNo} and delFlag = 'N'
+		</when>
+		<otherwise>
+			from closet where userNo=#{userNo} and clothCateNo=#{clothCateNo} and delFlag = 'N'
+		</otherwise>
+	</choose>
+	</select>
+	<!-- 옷장 옷 삭제(update로 delFlag->'Y'로) -->
+	<update id="deleteClothes" parameterType="int">
+		update closet set delFlag = 'Y' where clothNo = #{clothNo}
+	</update>
+	
+	<!-- 위시리스트 가져오기 -->
+	<select id="getWishList" parameterType="map" resultType="WishListVo">
+		<![CDATA[
+			select orderdata.rn,
+				   orderdata.wishNo,
+				   orderdata.content,
+				   orderdata.boardImg,
+				   orderdata.nickName,
+				   orderdata.id	
+			from (select rownum rn,
+				 	     data.wishNo,
+					     data.content,
+					     data.boardImg,
+					     data.nickName,
+					     data.id
+				  from (select bcb.wishNo,
+					       	   bcb.content,
+		       			  	   bcb.boardImg,
+		       			  	   bcb.nickName,
+		       			  	   bcb.id
+					    from (select un.wishNo,
+									 un.content,
+									 un.boardNo,
+									 un.boardImg,
+									 un.nickName,
+									 un.id
+							  from (select w.wishNo,
+										   w.content,
+										   w.boardNo,
+										   cb.boardImg,
+										   u.nickName,
+										   u.id
+									from wishList w, codiboard cb, users u
+									where w.boardNo = cb.boardno and u.userNo = cb.userNo
+									and w.userNo = #{userNo}
+
+									union
+
+									select w.wishNo,
+      									   w.content,
+      									   w.matchNo as boardNo,
+      									   mb.matchImg as boardImg,
+      									   u.nickName,
+      									   u.id
+									from wishList w, matchBoard mb, users u
+									where w.matchNo = mb.matchNo and u.userNo = mb.userNo 
+									and w.userNo = #{userNo}) un
+							  order by un.wishNo desc)bcb)data)orderdata
+			where rn >= #{begin} and rn <= #{end}
+		]]>
+	</select>
+	<!-- 위시리스트 카운트 -->
+	<select id="getWishListCount" parameterType="int" resultType="int">
+	<![CDATA[
+		select count(*) from wishList where userNo=#{userNo}
+	]]>
+	</select>
+	<!-- 위시리스트 삭제 -->
+	<delete id="deleteWishList" parameterType="int">
+		delete wishList where wishNo = #{wishNo}
+	</delete>
+	<!-- 코디구함 보관함 리스트 -->
+	<select id="getStyleMatch" parameterType="map" resultType="CodiBoardVo">
+	<![CDATA[
+		select orderdata.rn,
+			   orderdata.boardNo,
+			   orderdata.title,
+			   orderdata.content,
+			   orderdata.boardImg,
+			   orderdata.deadline,
+			   orderdata.reCount,
+			   orderdata.adopt
+		from (select rownum rn,
+			   		 data.boardNo,
+			   		 data.title,
+			   		 data.content,
+			   		 data.boardImg,
+			   		 data.deadline,
+			   		 data.reCount,
+			   		 data.adopt
+			  from (select c.boardNo,
+			   			   c.title, 
+			   			   c.content, 
+			   			   c.boardImg, 
+			   			   to_char(c.deadline,  'YY.MM.DD') deadline, 
+			   			   co.reCount,
+			   			   ad.adopt
+					from codiBoard c , (select boardNo,
+			                                   count(adopt) as adopt
+			                            from matchBoard
+			                            where adopt='Y'
+			                            group by boardNo) ad, (select count (ma.matchNo) reCount,
+			                                    					  ma.boardNo boardNo
+													           from matchBoard ma , codiBoard codi
+														       where division = 'recruitCodi'
+														       and ma.boardNo = codi.boardNo
+														       and ma.userNo != codi.userNo
+														       group by ma.boardNo) co 
+					where division = 'recruitCodi'
+			        and c.boardNo = ad.boardNo(+)
+			        and c.boardNo = co.boardNo(+)
+			        and c.userNo = #{userNo}
+			        and c.delFlag = 'N'
+	]]>	
+	<if test= "categoryNo == 1">
+	<![CDATA[
+					and c.deadline < sysdate
+					and ad.adopt is null
+	]]>
+	</if>
+	<if test= "categoryNo == 2">
+	<![CDATA[
+					and c.deadline > sysdate
+					and ad.adopt is null
+	]]>
+	</if>
+	<if test= "categoryNo == 3">
+	<![CDATA[
+					and ad.adopt > 0
+	]]>
+	</if>
+	<![CDATA[
+					order by c.boardNo desc)data)orderdata
+		where rn >= #{begin} and rn <= #{end}
+	]]>		   
+	</select>
+	<!-- 코디구함 삭제(update로 delFlag->'Y'로) -->
+	<update id="deleteStyZipList" parameterType="int">
+		update codiBoard set delFlag = 'Y' where boardNo = #{boardNo}
+	</update>
+	<!-- 코디구함 보관함 카운트 -->
+	<select id="getStyleMatchCount" parameterType="map" resultType="int">
+	<![CDATA[
+		select count(*)
+		from codiBoard
+		where division = 'recruitCodi' and
+			  delFlag = 'N' and
+			  userNo = #{userNo}
+	]]>
+	<if test= "categoryNo == 1">
+	<![CDATA[
+		and deadline < sysdate
+	]]>
+	</if>
+	<if test= "categoryNo == 2">
+	<![CDATA[
+		and deadline > sysdate
+	]]>
+	</if>
+	<![CDATA[
+		order by boardno desc
+	]]>		   		   
+	</select>
+	
+	<!-- 코디하기 총 글 갯수 가져오기 -->
+	<select id="selectCodiListCnt" parameterType="map" resultType="int">
+	<![CDATA[
+		select count(boardNo)
+		from codiBoard
+		where division = 'doCodi'
+		and userNo = #{userNo}
+		and delFlag = 'N'
+	]]>
+		<choose>
+			<when test="listType == 1">
+		and trendSetterNo is null	
+			</when>
+			<when test="listType == 2">
+		and trendSetterNo is not null	
+			</when>
+		</choose>
+		<if test='openFlag == "Y"'>
+		and openFlag = #{openFlag}
+		</if>
+	</select>
+	
+	<!-- 코디하기 리스트 가져오기 -->
+	<select id="selectCodiList" parameterType="map" resultType="CodiBoardVo">
+	<![CDATA[
+		select  r.rn,
+                r.boardNo,
+                r.title,
+                r.content,
+                r.boardImg,
+                r.trendSetterNo,
+                r.openFlag,   
+                r.reCount
+		from (select rownum as rn,
+                     cl.boardNo,
+                     cl.title,
+                     cl.content,
+                     cl.boardImg,
+                     cl.trendSetterNo,  
+                     cl.openFlag, 
+                     cl.reCount
+              from (select cb.boardNo,
+                           cb.title,
+                           cb.content,
+                           cb.boardImg,
+                           cb.trendSetterNo, 
+                           to_char(cb.regDate, 'YY/MM/DD HH24:MI:SS') regDate,
+                           cb.openFlag,
+                           tsc.reCount
+                    from codiBoard cb left join (select boardNo,
+                                                        count(comNo) as reCount
+                                                 from trendSetterComment
+                                                 group by boardNo) tsc
+                    on cb.trendSetterNo = tsc.boardNo
+                    where cb.division = 'doCodi'
+                    and cb.userno = #{userNo}
+                    and cb.delflag = 'N'
+	]]>
+		<choose>
+			<when test="listType == 1">
+                    and cb.trendSetterNo is null	
+			</when>
+			<when test="listType == 2">
+                    and cb.trendSetterNo is not null	
+			</when>
+		</choose>
+		<if test='openFlag == "Y"'>
+					and cb.openFlag = #{openFlag}
+		</if>
+	<![CDATA[
+                    order by regDate desc) cl) r
+		where r.rn >= #{startPostNo}
+		and r.rn <= #{endPostNo}
+	]]>		
+	</select>
+	
+	<!-- 코디하기 글 정보 가져오기 -->
+	<select id="selectCodiPost" parameterType="int" resultType="CodiBoardVo">
+	<![CDATA[
+		select boardNo,
+       		   userNo,
+       		   title,
+       		   replace(content, chr(10), '<br>') content,
+       		   boardImg,
+       		   regDate,
+       		   openFlag,
+       		   trendSetterNo
+		from codiBoard
+		where boardNo = #{boardNo}		
+	]]>		
+	</select>
+	
+	<!-- updateTotal -->
+	<update id="updateTotal" parameterType="int">
+		update users set totalVisit=totalVisit+1 where userNo = #{userNo}
+	</update>
+	
+	<select id="hasUserToday" parameterType="map" resultType="Integer">
+		select todayNo from today where userNo = #{userNo} and to_char(regdate,'YY/MM/DD') = #{date}
+	</select>
+	
+	<update id="updateToday" parameterType="map">
+		update today set count=count+1 where userNo = #{userNo} and to_char(regdate,'YY/MM/DD') = #{date}
+	</update>
+	
+	<insert id="insertToday" parameterType="map">
+		insert into today values(seq_today_no.nextval,#{userNo},sysdate,1)
+	</insert>
+	
+	<select id="getTodayCount" parameterType="map" resultType="Integer">
+		select count from today where userNo = #{userNo} and to_char(regdate,'YY/MM/DD') = #{date}
+	</select>
+	
+	<!-- 코디하기 글 트렌드 세터 등록할 경우 업데이트 -->
+	<update id="updateTrendSetterNo" parameterType="CodiBoardVo">
+		<![CDATA[
+			update codiboard
+			set trendsetterNo = #{trendSetterNo},
+    			openFlag = 'Y'
+			where boardNo = #{boardNo}
+		]]>		
+	</update>
+	
+	<!-- 코디하기 게시글 등록 -->
+	<insert id="insertDoCodi" parameterType="codiBoardVo">
+		<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
+			select seq_codiBoard_no.nextval from dual
+		</selectKey>
+      	<![CDATA[
+			insert into codiBoard
+			values (#{boardNo},
+					#{userNo},
+					#{title},
+					#{content},
+					'doCodi',
+					#{boardImg},
+					null,
+					sysdate,
+					null,
+					'N',
+					'N',
+					null)
+      	]]>
+	</insert>
+	
+	<!-- 코디하기 옷 정보 등록 -->
+	<insert id="insertCodiImg" parameterType="codiImgVo">
+      	<![CDATA[
+			insert into codiImg
+			values (seq_codiImg_no.nextval,
+					#{boardNo},
+					1,
+					0,
+					0,
+					0,
+					0,
+					0,
+					#{canvasJson})
+      	]]>
+	</insert>
+	
+	<!-- 코디하기 옷 정보 삭제 -->
+	<delete id="deleteCodiClothes" parameterType="int">
+      	<![CDATA[
+			delete codiImg
+			where boardNo = #{boardNo}
+      	]]>
+	</delete>
+	
+	<!-- 코디하기 옷 정보 가져오기 -->
+	<select id="selectClothes" parameterType="int" resultType="CodiImgVo">
+	<![CDATA[
+		select boardNo,
+        	   canvasJson
+		from codiImg
+		where boardNo = #{boardNo}
+	]]>		
+	</select>
+	
+	<!-- 코디하기 글 수정하기 -->
+	<update id="updateDoCodi" parameterType="codiBoardVo">
+		<![CDATA[
+			update codiBoard
+		    set title = #{title},
+		        content = #{content},
+		        boardImg = #{boardImg}
+			where boardNo = #{boardNo}
+		]]>	
+	</update>
+	
+	<!-- 코디하기 글 삭제 (delFlag 변경) 하기 -->
+	<update id="deleteCodiPost" parameterType="int">
+		<![CDATA[
+			update codiBoard
+		    set delFlag = 'Y'
+			where boardNo = #{boardNo}
+		]]>	
+	</update>
+	
+	<!-- 코디하기 공개여부 변경(delFlag 변경) 하기 -->
+	<update id="updateOpenFlag" parameterType="codiBoardVo">
+		<![CDATA[
+			update codiBoard
+		    set openFlag = #{openFlag}
+			where boardNo = #{boardNo}
+		]]>	
+	</update>
+	
+	<!-- 코디하기 트렌드세터 번호 Null로 변경 (트렌드 세터 글 삭제) -->
+	<update id="updateNullTSNo" parameterType="int">
+		<![CDATA[
+			update codiBoard
+			set trendSetterNo = null
+			where trendSetterNo = #{trendSetterNo}
+		]]>	
+	</update>
+		
+</mapper>

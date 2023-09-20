@@ -1,0 +1,689 @@
+@charset "UTF-8";
+
+
+/* 글자색 */
+.red {
+	color :red;
+}
+
+.black {
+	color :black;
+}
+
+.radius10 {
+	border-radius: 10px ;
+} 
+
+
+/*팔로우 팔로잉*/
+
+.follow_box {
+	border: 1px solid #3bb1e5; 
+	background: #3bb1e5; 
+	border-radius: 6px; 
+	color:#fff;
+	padding: 1px;
+}
+
+/* 위치 */
+.float-r {float: right; }
+.float-l {float: left; }
+.clear{clear: both; }
+
+/* 정렬 */
+.text-right {text-align: right;}
+.text-left {text-align: left;}
+.text-center {text-align: center;}
+
+/*선, boader , ra*/
+
+.blue_boader_box {
+    border: 2px solid #3BB1E5;
+    border-radius: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.gray_boader_box {
+	border:1px solid #CCC;
+	border-radius: 10px ;
+}
+
+.gray_boader_box2 {
+	border:2px solid #CCC;
+	border-radius: 10px ;
+}
+
+.white_box {
+	border:1px solid #ccc;
+	border-radius: 10px ;
+	background-color:#fff;
+}
+
+.red_btn {
+	background-color:#D9534F;
+	border-radius: 10px ;
+	border:1px solid #D9534F;
+}
+
+.red_btn:hover {
+	background-color:#B4100B;
+	border-radius: 10px ;
+	border:1px solid #B4100B;
+}
+
+.radius_btn {
+	border:1px solid #337AB7;
+	border-radius: 10px ;
+}
+
+.return {
+	float:right;
+	height:35px;
+	width:80px;
+	border:1px solid #ccc;
+	border-radius: 10px ;
+	line-height:35px;
+	margin-right:20px;
+	background-color:#fff;
+}
+
+.return:hover {
+	background-color:#E6E6E6;
+}
+
+
+
+/*이동경로 표시*/
+.location {
+	width:1160px;
+	font-size:23px;
+	font-weight: bold;
+	color:#666;
+	margin:10px 0px 20px 20px;
+	padding-bottom:10px;
+	border-bottom:1px solid #ccc;
+	margin-top:30px;
+}
+
+
+/******코디구함*******/
+
+/*검색, 글쓰기버튼*/
+.top_box {
+	width:1200px;
+	height:40px;
+	padding-top :10px;
+}
+
+.top_box input {
+	width:890px;
+	height:35px;
+	border:2px solid #3BB1E5;
+	border-radius: 10px ;
+	margin:0px 5px 0px 10px;
+	background-color:#fff;
+}
+
+.top_box button {
+	width:65px;
+	height:35px;
+	margin: 0px 5px 0px 1px;
+	border:1px solid #3BB1E5;
+	border-radius:10px ;
+	background-color:#fff;
+	font-weight:bold;
+	color:#3BB1E5;
+}
+
+.top_box button:hover {
+	background-color:#ccc;
+	color:#fff;
+	border:1px solid #fff;
+	
+}
+
+.top_box .blue_btn:hover {
+	background-color:#3bb1e5;
+	border:1px solid #3bb1e5;
+	color:#fff;
+}
+
+.top_box select {
+   border: 2px solid #3BB1E5;
+   width:100px;
+   height:30px;
+   margin-left:20px;
+   
+}
+
+/*codi_box*/
+
+#codi_box {
+	width:1200px;
+	height:800px;
+}
+
+
+#codi_box .codi_line {
+	margin-top:20px;
+}
+
+
+#codi_box .codi_line li {
+	float:lest;
+}
+
+
+#codi_box .codi_line li .codi_row {
+	width:220px;
+	height:380px;
+	float:left;
+	margin:10px 10px 10px 10px; 
+	text-align: center;
+	font-size:13px;
+	position: relative;
+}
+
+#codi_box .codi_line li .row_m45{
+	margin-bottom:45px;
+}
+
+#codi_box .codi_line li .codi_row .row01 {
+	margin-bottom:10px;
+	text-align: left;
+	margin-left:10px;
+}
+
+.row01_nick {	
+	font-weight: bold;
+    font-size: 14px;
+}
+
+#codi_box .codi_line li .codi_row .row01 .follow_btn {
+	color:#3bb1e5;
+	font-weight: bold;
+}
+
+#codi_box .codi_line li .codi_row .row02_back {
+	width:200px;
+	height:317px;
+	background-color:#000;
+	box-sizing:border-box;
+	z-index:20px;
+	position:absolute;
+	opacity:0; 
+	transition:all 0.3s; 
+	cursor: pointer;
+	margin-left:10px;
+}
+
+#codi_box .codi_line li .codi_row .row02_back img {
+	width:15px;
+	border:0px solid #000;
+	float:right;
+	margin:5px 5px 0px 0px;
+	z-index: 99999;
+}
+
+
+#codi_box .codi_line li .codi_row .row02_back  p {
+	color:#fff;
+	opacity:1; 
+	margin-top:140px;
+}
+
+
+#codi_box .codi_line li .codi_row .row02 {
+	width:200px;
+	height:317px;
+	border:1px solid #ccc;
+	border-radius: 10px ;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+#codi_box .codi_line li .codi_row:hover .row02_back{
+	opacity:0.65;
+	background-color:#000;
+}
+
+
+#codi_box .codi_line li .codi_row .row03 {
+	margin-top:10px;
+}
+
+#codi_box .codi_line li .codi_row .row03 i {
+	width:90px;
+	font-size:14px;
+	
+}
+
+#codi_box .codi_line li .codi_row .re_row03 i {
+	width:50px;
+	font-size:14px;
+	margin-top:10px;
+	
+}
+
+
+
+/*코디구함 - 글쓰기*/
+
+#codi_writeBox {
+	width:1200px;
+	height:1000px;
+	margin-left:20px;
+}
+
+#codi_writeBox .title {
+	width:783px;
+	height:35px;
+	margin: 0px 38px 0px 0px;
+	float:left;
+	line-height:35px;
+}
+
+#codi_writeBox .title_name , .date_limit  {
+	width:70px;
+	height:35px;
+	background-color:#3BB1E5;
+	float:left;
+	line-height:35px;
+	margin:0px 20px 0px 0px;
+	color:#fff;
+	border:1px solid #3BB1E5;
+}
+
+#codi_writeBox .codi_drag {
+	width:327px;
+	height:518px;
+	margin: 20px 10px 10px 0px;
+	float:left;
+	border:3px solid #adadad;
+	border-radius: 10px ;
+	padding:10px;
+}
+
+#codi_writeBox .closet_drag {
+	width:760px;
+	height:518px;
+	margin: 10px;
+	margin-top:20px;
+	float:left;
+	border:3px solid #adadad;
+	border-radius: 10px ;
+	padding:10px;
+	
+}
+
+#codi_writeBox .closet_drag .tab-content .tab-pane ul{
+	background-color:#ccc;
+	
+}
+
+#codi_writeBox .closet_drag .tab-content .tab-pane ul li{
+	margin:5px 4px 0px 4px;
+	box-sizing:border-box;
+	border-radius: 10px ;
+	text-align: center;
+}
+
+.clothImg{
+	width:130px;
+	height:150px;
+}
+
+#codi_writeBox .closet_drag .tab-content .tab-pane ul li img{
+
+	width:auto;
+	height:100%;
+}
+
+#codi_writeBox .check_box {
+	width:320px;
+	float:left;
+}
+
+#codi_writeBox .check_box input{
+	margin: 0px 10px 0px 10px;
+}
+
+#codi_writeBox .codi_text {
+	width:1146px;
+	height:150px;
+	margin-top:20px;
+	border:2px solid #3bb1e5;
+	resize:none;
+	font-size: 18px;
+	padding:5px;
+	border-radius:10px;
+}
+
+
+#codi_writeBox .but_box button {
+	width:65px;
+	height:35px;
+	text-align: center;
+	margin: 20px 0px 0px 0px;
+	border:1px solid #3bb1e5;
+	color:#3bb1e5;
+}
+
+#codi_writeBox .but_box button:hover {
+	background-color: #3bb1e5;
+	color:#fff;
+}
+
+
+
+
+/*코디구함 - 글읽기*/
+
+#codi_readBox {
+	width:1200px;
+	height:550px;
+	margin-left:20px;
+	margin-top:40px;
+}
+
+#codi_readBox .title {
+	width:832px;
+	height:35px;
+	margin: 0px 30px 0px 0px;
+	float:left;
+	line-height:35px;
+	padding-left:10px;
+}
+
+#codi_readBox .title_name,.date_limit  {
+	width:70px;
+	height:35px;
+	background-color:#3BB1E5;
+	float:left;
+	text-align: center;
+	line-height:35px;
+	margin:0px 10px 0px 0px;
+	color:#fff;
+	border:1px solid #3BB1E5;
+}
+
+#codi_readBox .editor {
+	padding-left:10px;
+	height:35px;
+	width:104px;
+	float:left;
+	line-height:35px;
+	
+}
+
+#codi_readBox .codi_drag {
+	width:327px;
+	height:554px;
+	margin: 10px 10px 40px 0px;
+	float:left;
+	border:3px solid #adadad;
+	border-radius: 10px ;
+	overflow: hidden;
+}
+
+#codi_readBox .codi_drag img {
+	width:100%;
+}
+
+#codi_readBox .closet_drag {
+	width:780px;
+	height:534px;
+	margin: 10px;
+	margin-bottom:40px;
+	float:left;
+	border:3px solid #adadad;
+	border-radius: 10px ;
+	padding:10px;
+}
+
+.tab-pane {
+	padding:10px;
+}
+
+#codi_box .coment_box {
+	width:1200px;
+	height:35px;
+}
+
+#codi_box .coment_box > p {
+	margin-left:20px;
+	margin-top:20px;
+	font-size:15px;
+	width:500px;
+	float:left;
+	
+}
+
+#codi_box .coment_box p span{
+	font-weight: bold;
+	margin: 0px 15px 0px 0px;
+}
+
+
+#codi_box .coment_box .codi_coment_btn {
+	float:right;
+	height:35px;
+	width:80px;
+	border:1px solid #ccc;
+	border-radius: 10px ;
+	line-height:35px;
+	margin-right:20px;
+	background-color:#fff;
+}
+
+#codi_box .coment_box .codi_coment_btn:hover {
+	background-color:#3bb1e5;
+	border:1px solid #3bb1e5;
+	color:#fff;
+} 
+
+/*위시리스트 아이콘*/
+.row01 > i {
+	float:right;
+	margin-right:10px;
+	font-size:20px;
+}
+
+/*채택완료 아이콘*/
+.row04 {
+	width:200px; 
+	background-color: #3bb1e5;
+	text-align: center;
+	height:30px;
+	margin-left:10px;
+	margin-top:10px;
+}
+
+.row04 > .fa-check {
+	font-size:13px;
+	margin-top:10px;
+	color:#fff;
+}
+
+
+
+
+/*위시리스트 모달창*/
+#wishlistModal .modal-dialog {
+	width:600px;
+}
+
+.modal-body div img {
+	margin-left:126px;
+}
+
+
+.wish_comment_label label {
+	font-size:15px;
+	padding:2px 6px 2px 6px;
+	background-color: #ccc;
+	margin: 20px 0px 10px 0px;
+}
+
+.wish_comment_label textarea {
+	width:100%;
+}
+
+/*최신순 좋아요순 정렬*/
+/*선택상태*/
+.blue_order > li.active > a, .blue_order > li.active > a:hover, .blue_order > li.active > a:focus{
+	font-weight : 900;
+	background-color:#fff;
+	color:#3bb1e5;
+	border:none;
+	border-bottom:1px solid #3bb1e5;
+	
+}
+/*비선택상태*/
+.blue_order > li > a {
+	font-weight : 100;
+	background-color:#fff;
+}
+
+
+/*답글 모달창*/
+
+.modal.fade .modal-dialog {
+	width:700px;
+}
+
+.modal-body > img {
+	width:250px;
+	box-sizing: border-box;
+	cursor: pointer;
+		
+}
+.modal-body > .text_box {
+	float: right;
+	width:385px;
+	height:400px;
+	margin-right:20px;
+}
+		
+.modal-body > .text_box input {
+	width:329px;
+	height:30px;
+	border:1px solid #ccc;
+	border-radius: 10px ;
+}
+
+.modal-body > .text_box button {
+	width:45px;
+	height:30px;
+	margin-left:6px;
+}
+/*
+.modal-body > .text_box .icon_box i{
+	font-size:20px;
+	margin-left:15px;
+	margin-bottom:5px;
+}	
+*/
+.modal-footer .icon_box {
+}	
+
+.modal-footer .icon_box > i{
+	font-size:21px;
+	margin-left:10px;
+	line-height:20px;
+}
+	
+.modal-footer .icon_box .bookmark_btn {
+	background:#fff;
+	border:1px solid #ccc;
+	margin:0px 0px 0px 10px;
+	
+}
+
+.modal-footer .icon_box .bookmark_btn:hover {
+	background:#ccc;
+	color:#fff;
+}
+
+.modal-footer .icon_box .bookmark_btn  i{
+	font-size:17px;
+	margin-left:0px;
+	margin-top:0px;
+}
+		
+.modal-body > .text_box .re_text , .text_top {
+	padding-top:5px;
+	padding-left:5px;
+	float: left;
+	height:170px;
+	width:400px;
+	border:1px solid #ccc;
+	border-radius: 10px ;
+	margin-bottom:8px;
+}
+
+.re_text ul li span {
+	float:right;
+}
+.re_text ul li span a {
+	margin:0px 5px 0px 5px;
+}
+/*추가 된것 이상하면 바꾸세요*/
+#paging{
+	text-align: center;
+}
+#codi_writeBox .closet_drag .tab-content{
+	height: 280px;
+}
+/*대댓글 css*/
+.delReReComments{
+	 display: inline-block;
+	 cursor:pointer;
+	 border: 1px solid #D9534F;
+	 border-radius: 4px;
+	 background-color: #D9534F;
+	 color: white;
+	 margin-left: 5px;
+	 font-size: 12px;
+	 padding: 3px;
+}
+.modiReReComments{
+	display: inline-block;
+	cursor:pointer;
+	border: 1px solid #286090;
+	border-radius: 4px;
+	background-color: #286090;
+	color: white;
+	margin-left: 214px;
+	font-size: 12px;
+	padding: 2px;
+}
+.reReCommentLi{
+	border-radius: 3px;
+	width: 390px;
+	background-color: #E1E1E1;
+	margin-bottom:5px;
+}
+.reReCommentWriter{
+	display: inline-block;
+}
+.reRecommentDiv{
+	font-size: 16px;
+}
+
+.icon_box span{
+	display: inline-block;
+	font-size: 22px;
+	margin-left:15px;
+}
+
+#spanLike{
+	cursor: pointer;
+}
+
+/*padding*/
+
+.p00 {
+	padding:0px ;
+}

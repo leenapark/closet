@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="trendSetter">
+
+	<!-- trendSetter 메인 리스트 조회 -->
+	<select id="trendSetterList" parameterType="map" resultType="TrendSetterVo">
+      <![CDATA[
+        	select r.rn,
+			       r.nickName,
+			       r.id,
+			       r.boardNo,
+			       r.userNo,
+			       r.title,
+			       r.content,
+			       r.division,
+			       r.boardImg,
+			       r.gender,
+			       r.openFlag,
+			       r.delFlag,
+			       r.regDate,
+			       r.follower,
+			       r.commentCnt,
+			       r.goodCnt      
+			from( select rownum as rn,
+			             o.nickName,
+			             o.id,
+			             o.boardNo,
+			             o.userNo,
+			             o.title,
+			             o.content,
+			             o.division,
+			             o.boardImg,
+			             o.gender,
+			             o.openFlag,
+			             o.delFlag,
+			             o.regDate,
+			             o.follower,
+			             o.commentCnt,
+			             o.goodCnt
+			     from(  select  u.nickName,
+			                    u.id,
+			                    c.boardNo,
+			                    c.userNo,
+			                    c.title,
+			                    c.content,
+			                    c.division,
+			                    c.boardImg,
+			                    c.gender,
+			                    c.openFlag,
+			                    c.delFlag,
+			                    c.regDate,
+			                    f.follower,
+			                    commentCnt,
+			                    goodCnt
+			            from users u, codiBoard c
+			            left outer join (select following, 
+			                                    follower 
+			                                    from follow 
+			                            where follower = #{follower}) f 
+			            on c.userNo = f.following
+			            left outer join (select boardno, 
+			                                    count(comNo) as commentCnt 
+			                             from trendSetterComment 
+			                             group by boardno) cmt 
+			                             on c.boardNo = cmt.boardno
+			                             left outer join (select count(feelingNo) as goodCnt, 
+			                                                     boardNo 
+			                                              from feeling 
+			                                              where feelType = #{feel} 
+			                                              and boardNo is not null 
+			                                              group by boardno) ghg 
+			                             on c.boardNo = ghg.boardno
+			where u.userNo = c.userNo
+			and c.division = #{division}
+			and c.delFlag <> #{delFlag}
+	  ]]>
+			<if test="keyword != null and keyword != '' and searchCate == 'title'">
+				and c.title like '%' || #{keyword} || '%'
+			</if>
+			
+			<if test="keyword != null and keyword != '' and searchCate == 'nickName'">
+				and u.nickName like '%' || #{keyword} || '%'
+			</if>
+			
+			<if test="gender != null and gender != ''">
+				and c.gender = #{gender}
+			</if>
+			
+	  <![CDATA[
+	 	order by c.regDate desc, c.boardNo desc
+	 	) o ) r
+	 	where r.rn >= #{startPostNo}
+	 	and r.rn <= #{endPostNo}
+      ]]>
+	</select>
+	
+	<!-- trendSetter 메인 리스트 조회 -->
+	<select id="trendSetterListCnt" parameterType="map" resultType="int">
+      <![CDATA[
+        	select count(r.boardNo)
+			from( select rownum as rn,
+			             o.nickName,
+			             o.id,
+			             o.boardNo,
+			             o.userNo,
+			             o.title,
+			             o.content,
+			             o.division,
+			             o.boardImg,
+			             o.gender,
+			             o.openFlag,
+			             o.delFlag,
+			             o.regDate,
+			             o.follower,
+			             o.commentCnt,
+			             o.goodCnt
+			     from(  select  u.nickName,
+			                    u.id,
+			                    c.boardNo,
+			                    c.userNo,
+			                    c.title,
+			                    c.content,
+			                    c.division,
+			                    c.boardImg,
+			                    c.gender,
+			                    c.openFlag,
+			                    c.delFlag,
+			                    c.regDate,
+			                    f.follower,
+			                    commentCnt,
+			                    goodCnt
+			            from users u, codiBoard c
+			            left outer join (select following, 
+			                                    follower 
+			                                    from follow 
+			                            where follower = #{follower}) f 
+			            on c.userNo = f.following
+			            left outer join (select boardno, 
+			                                    count(comNo) as commentCnt 
+			                             from trendSetterComment 
+			                             group by boardno) cmt 
+			                             on c.boardNo = cmt.boardno
+			                             left outer join (select count(feelingNo) as goodCnt, 
+			                                                     boardNo 
+			                                              from feeling 
+			                                              where feelType = #{feel} 
+			                                              and boardNo is not null 
+			                                              group by boardno) ghg 
+			                             on c.boardNo = ghg.boardno
+			where u.userNo = c.userNo
+			and c.division = #{division}
+			and c.delFlag <> #{delFlag}
+	  ]]>
+			<if test="keyword != null and keyword != '' and searchCate == 'title'">
+				and c.title like '%' || #{keyword} || '%'
+			</if>
+			
+			<if test="keyword != null and keyword != '' and searchCate == 'nickName'">
+				and u.nickName like '%' || #{keyword} || '%'
+			</if>
+			
+			<if test="gender != null and gender != ''">
+				and c.gender = #{gender}
+			</if>
+			
+	  <![CDATA[
+	 	order by c.regDate desc, c.boardNo desc
+	 	) o ) r
+      ]]>
+	</select>
+
+	<!-- trendSetter 선택한 태그가 포함된 게시글 리스트 조회 -->
+	<select id="includeTagList" parameterType="map" resultType="TrendSetterVo">
+      <![CDATA[
+         	select r.rn,
+			       r.nickName,
+			       r.id,
+			       r.boardNo,
+			       r.userNo,
+			       r.title,
+			       r.content,
+			       r.division,
+			       r.boardImg,
+			       r.gender,
+			       r.openFlag,
+			       r.delFlag,
+			       r.regDate,
+			       r.follower,
+			       r.commentCnt,
+			       r.goodCnt      
+			from( select rownum as rn,
+			             o.nickName,
+			             o.id,
+			             o.boardNo,
+			             o.userNo,
+			             o.title,
+			             o.content,
+			             o.division,
+			             o.boardImg,
+			             o.gender,
+			             o.openFlag,
+			             o.delFlag,
+			             o.regDate,
+			             o.follower,
+			             o.commentCnt,
+			             o.goodCnt
+			     from(  select  u.nickName,
+			                    u.id,
+			                    c.boardNo,
+			                    c.userNo,
+			                    c.title,
+			                    c.content,
+			                    c.division,
+			                    c.boardImg,
+			                    c.gender,
+			                    c.openFlag,
+			                    c.delFlag,
+			                    c.regDate,
+			                    f.follower,
+			                    commentCnt,
+			                    goodCnt
+			            from users u, codiBoard c
+			            left outer join (select following, 
+			                                    follower 
+			                                    from follow 
+			                            where follower = #{follower}) f 
+			            on c.userNo = f.following
+			            left outer join (select boardno, 
+			                                    count(comNo) as commentCnt 
+			                             from trendSetterComment 
+			                             group by boardno) cmt 
+			                             on c.boardNo = cmt.boardno
+			                             left outer join (select count(feelingNo) as goodCnt, 
+			                                                     boardNo 
+			                                              from feeling 
+			                                              where feelType = #{feel} 
+			                                              and boardNo is not null 
+			                                              group by boardno) ghg 
+			                             on c.boardNo = ghg.boardno
+			where u.userNo = c.userNo
+			and c.division = #{division}
+			and c.delFlag <> #{delFlag}
+			and c.boardNo = #{boardNo}
+	 	]]>
+		
+			<if test="gender != null and gender != ''">
+				and c.gender = #{gender}
+			</if>
+			
+	  <![CDATA[
+	 	order by c.regDate desc, c.boardNo desc
+	 	) o ) r
+	
+      ]]>
+	</select>
+
+	<!-- 게시글 한개 조회 -->
+	<select id="codiBoardSelectOne" parameterType="map" resultType="TrendSetterVo">
+      <![CDATA[
+         select  users.nickname,
+                 codiBoard.boardNo,
+                 codiBoard.userNo,
+                 codiBoard.title,
+                 codiBoard.content,
+                 codiBoard.division,
+                 codiBoard.boardImg,
+                 codiBoard.gender,
+                 codiBoard.openFlag,
+                 codiBoard.delFlag
+         from codiBoard, users
+         where codiBoard.userNo = users.userNo
+         and codiBoard.division = #{division}
+         and codiBoard.boardNo = #{boardNo}
+      ]]>
+	</select>
+
+	<!-- 해당 게시글의 좋아요 갯수 -->
+	<select id="boardGoodCount" parameterType="map" resultType="int">
+      <![CDATA[
+         select count(*) 
+         from feeling
+         where feelType = #{feelType}
+         and boardNo = #{boardNo}
+         and boardNo is not null
+      ]]>
+	</select>
+
+	<!-- 게시글 삭제시 update -->
+	<update id="updateTrendSetterDelFlag" parameterType="map">
+      <![CDATA[
+         update codiboard
+         set delFlag = 'Y'
+         where boardNo = #{boardNo}
+         and delFlag = #{delFlag}
+      ]]>
+	</update>
+
+	<!-- 선택한 태그가 포함된 boardNo 리스트 -->
+	<select id="includeTagBoardList" parameterType="int" resultType="TrendSetterVo">
+      <![CDATA[
+         select  boardTag.boardNo,
+                 boardTag.tagNo,
+                 tag.tagDivNo,
+                 tag.tagName
+         from boardTag, tag
+         where boardTag.tagNo = tag.tagNo
+         and tag.tagNo = #{tagNo}
+      ]]>
+	</select>
+
+	<!-- 위시리스트 등록 화면에 뿌려줄 해당 게시글의 이미지를 가져오기 위해 -->
+	<select id="selectBoardImg" parameterType="int" resultType="TrendSetterVo">
+      <![CDATA[
+         select  boardNo,
+                 boardImg
+         from codiboard
+         where boardNo = #{boardNo}
+      ]]>
+	</select>
+
+	<!-- 위시리스트 추가 -->
+	<insert id="wishListInsert" parameterType="map">
+      <![CDATA[
+         insert into wishList values(seq_wishList_no.nextval, 
+                              #{userNo}, 
+                              #{boardNo},
+                              #{content},
+                              sysdate,
+                              null)
+      ]]>
+	</insert>
+
+	<!-- 해당 게시물에 좋아요를 클릭한 이력이 있는지 조회 -->
+	<select id="feelingSelect" parameterType="map" resultType="TrendSetterVo">
+      <![CDATA[
+         select  codiBoard.boardNo,
+                 codiBoard.userNo,
+                 feeling.userNo,
+                 feeling.feelingNo,
+                 feeling.feelType
+         from codiBoard, feeling
+         where codiBoard.boardNo = feeling.boardNo
+         and feeling.feelType = #{feelType}
+         and feeling.matchNo is null
+         and codiBoard.boardNo = #{boardNo}
+         and feeling.userNo = #{userNo}
+      ]]>
+
+	</select>
+
+	<!-- 좋아요를 취소할때 feeling 테이블에서 삭제 -->
+	<delete id="deleteFeeling" parameterType="map">
+      <![CDATA[
+         delete 
+         from feeling
+         where userNo = #{userNo}
+         and boardNo = #{boardNo}
+      ]]>
+	</delete>
+
+	<!-- 좋아요를 선택할때 feeling 테이블에 insert -->
+	<insert id="insertFeeling" parameterType="map">
+      <![CDATA[
+         insert into feeling values(seq_feeling_no.nextval, 
+                              #{userNo}, 
+                              null, 
+                              #{boardNo}, 
+                              #{feelType})
+      ]]>
+	</insert>
+
+	<!-- 댓글 수를 가져오기  수정 -->
+	<select id="selectCmtOne" parameterType="int" resultType="int">
+		<![CDATA[
+			select count(comNo)
+			from trendsettercomment
+			where boardNo = #{boardNo}
+		]]>
+	</select>
+	
+	<!--cmtPrintCnt이후 getCmtCnt 수(startCmtNo~endCmtNo)만큼 리스트를 가져옴-->
+	<select id="selectCmtList" parameterType="map" resultType="CommentVo">
+		<![CDATA[
+		
+			select r.rn,
+				   r.comNo as matchComNo,
+				   r.userNo,
+				   r.boardNo as matchNo,
+				   r.content,
+				   r.regDate,
+				   r.id,
+				   r.nickname
+			from (select rownum rn,
+                         o.comNo,
+                         o.userNo,
+                         o.boardNo,
+                         o.content,
+                         o.regDate,
+                         o.id,
+                         o.nickname
+                  from (select t.comNo,
+                               t.userNo,
+                               t.boardNo,
+                               replace(t.content, chr(10), '<br>') content,
+                               to_char(t.regDate, 'YYYY.MM.DD HH24:MI') regDate,
+                               u.id,
+                               u.nickname
+                        from trendsettercomment t, users u
+                        where t.userNo = u.userNo
+                        and t.boardNo = #{boardNo}
+                        order by t.regDate desc) o) r
+			where rn >= #{startCmtNo}
+			and rn <= #{endCmtNo}
+		]]>
+	</select>
+
+	<!-- 댓글 등록 -->
+	<insert id="insertCmt" parameterType="CommentVo">
+      <![CDATA[
+         insert into trendSetterComment
+         values(seq_trendSetterComment_no.nextval,
+         		#{userNo},
+         		#{matchNo},
+         		#{content},
+         		sysdate)
+      ]]>
+	</insert>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteCmt" parameterType="int">
+		delete trendSetterComment
+		where comNo = #{comNo}
+	</delete>
+
+	<!-- 댓글 수정 -->
+	<update id="updateCmt" parameterType="CommentVo">
+		update trendSetterComment
+		set content = #{content}
+		where comNo = #{matchComNo}
+	</update>
+	
+	<!-- 트렌드 세터 게시글 등록 -->
+	<insert id="insertTrendSetter" parameterType="TrendSetterVo">
+		<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
+			select seq_codiBoard_no.nextval from dual
+		</selectKey>
+      	<![CDATA[
+			insert into codiBoard
+			values (#{boardNo},
+					#{userNo},
+					#{title},
+					#{content},
+					'trendSetter',
+					#{boardImg},
+					#{gender},
+					sysdate,
+					null,
+					'Y',
+					'N',
+					null)
+      	]]>
+	</insert>
+	
+	
+	<!-- 트렌드 세터 게시글 태그 등록 -->
+	<insert id="insertTrendSetterTag" parameterType="TrendSetterVo">
+      <![CDATA[
+         insert into boardTag
+         values (#{boardNo},
+                 #{tagNo})
+      ]]>
+	</insert>
+	
+</mapper>

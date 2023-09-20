@@ -1,0 +1,44 @@
+@charset "utf-8";
+
+/*리셋*/
+
+/*여백초기화*/
+body, div, ul, li, dl, dt, ol, h1, h2, h3, h4, h5, h6, input, fieldset, legend, p, select, table, th, td, tr, textarea, button, form { 
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+    box-sizing: border-box;
+    box-sizing: content-box;
+}
+
+body {font-family: "맑은 고딕";
+        font-size: 12px;
+}
+
+a:link, a:visited, a:active, a:hover  {
+    text-decoration: none;
+    color:#000;
+}
+
+ul, li, ol {list-style-type: none;}
+
+.clearfix {
+  *zoom: 1;
+}
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: block;
+  line-height: 0;
+}
+.clearfix::after {
+  clear: both;
+  
+}
+
+.clear{
+	clear:both;
+}
+
+.pagination > li > a, .pagination > li > span{
+	color: #4D4D4D;
+}
